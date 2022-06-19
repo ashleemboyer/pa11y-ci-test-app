@@ -19,4 +19,13 @@ jobs:
 
       # Run pa11y-ci against the generated sitemap
       # https://github.com/pa11y/pa11y-ci#sitemaps
-      - run: npm run pa11y-ci -- --sitemap ${{ github.event.deployment_status.target_url }}/sitemap.xml
+      - run: npm run pa11y-ci -- --json --sitemap ${{ github.event.deployment_status.target_url }}/sitemap.xml |& tee pa11y-output.txt
+
+      - name: Comment on PR
+        uses: actions/github-script@v5
+        env:
+          BODY_PREFIX: '<!-- pa11y-ci results -->'
+        with:
+          script: |
+            const script = require('./.github/workflows/scripts/pa11y-ci.js')
+            await script({ context, core, github })
