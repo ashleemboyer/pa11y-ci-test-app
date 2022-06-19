@@ -1,0 +1,15 @@
+on: deployment_status
+
+jobs:
+  pa11y-ci:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run pa11y-ci
+        run: npm run pa11y-ci -- --sitemap ${{ github.event.deployment_status.target_url }}/sitemap.xml
